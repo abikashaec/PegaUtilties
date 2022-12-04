@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      html,
+      body {
+        height: 99%;
+        display: flex;
+        flex-basis: 100%;
+      }
+      div {
+        display: flex;
+      }
+
+      .container {
+        padding: 1.5em;
+        flex-grow: 1;
+        flex-basis: 100%;
+      }
+      .row {
+        justify-content: space-between;
+        flex-grow: 1;
+        flex-basis: 100%;
+      }
+      .input-header {
+        background-color: #001f5f;
+        color: white;
+        padding: 1em;
+        border-radius: 0.25em 0.25em 0 0;
+        margin: 0;
+      }
+      textarea {
+        width: calc(100% - 2px);
+        padding: 0;
+        resize: vertical;
+        border-radius: 0 0 2px 2px;
+        display: block;
+        position: relative;
+      }
+
+      .input-text-wrapper {
+        flex-basis: 50%;
+        flex-direction: column;
+      }
+
+      .input-textarea {
+        height: 100%;
+      }
+
+      .mapped-query {
+        height: 100%;
+        overflow-x: auto;
+        border: 1px solid;
+      }
+
+      .btn {
+        width: fit-content;
+        padding: 0.5em 2em;
+        font-size: inherit;
+        font-family: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: 0.25em;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn.primary {
+        background-color: #ffc836;
+      }
+
+      .margin-t-0 {
+        margin-top: 0;
+      }
+
+      .margin-r-1x {
+        margin-right: 1em;
+      }
+
+      .padding-b-1x {
+        padding-bottom: 1em;
+      }
+
+      .align-right {
+        margin-left: auto;
+      }
+      .col,
+      .row {
+        gap: 1em;
+      }
+
+      .col {
+        flex-basis: 100%;
+        flex-direction: column;
+        justify-content: space-evenly;
+      }
+
+      footer {
+        position: fixed;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        font-size: 0.8em;
+        left: 0;
+        right: 0;
+        padding: 1em 0 0.5em 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="input-text-wrapper">
+            <h4 for="sql" class="input-header margin-t-0">SQL with ? marks</h4>
+            <textarea name="sql" id="sql" class="input-textarea"> </textarea>
+          </div>
+          <div class="input-text-wrapper">
+            <h4 for="params" class="input-header">
+              SQL parameters enclosed in &lt;&gt;
+            </h4>
+            <textarea
+              name="params"
+              id="params"
+              class="input-textarea"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="col">
+          <div>
+            <button id="mapButton" class="btn primary margin-r-1x">Map</button>
+            <button id="copyClipboard" class="btn">Copy to clipboard</button>
+            <button id="reset" class="btn align-right">Reset</button>
+          </div>
+          <textarea id="mappedQuery" class="mapped-query" disabled></textarea>
+        </div>
+      </div>
+    </div>
+    <footer>&copy;&nbsp;<span id="year"></span>&nbsp; Abikash Sharma</footer>
+  </body>
+
+  <script>
+    document.getElementById("mapButton").addEventListener("click", mapQuery);
+    document
+      .getElementById("copyClipboard")
+      .addEventListener("click", copyClipboard);
+    document.getElementById("reset").addEventListener("click", reset);
+    document.getElementById("year").innerHTML = new Date().getFullYear();
+
+    function mapQuery() {
+      let sql = document.getElementById("sql").value;
+      let params = document.getElementById("params").value;
+      params = params.replace(/>\s*\</g, "','");
+      params = params.replace(/[>\<]/g, "'");
+      const myArray = params.split(",");
+      myArray.forEach((element) => {
+        sql = sql.replace(/\?/, element);
+      });
+      document.getElementById("mappedQuery").value = sql;
+    }
+
+    function copyClipboard() {
+      let mappedQuery = document.getElementById("mappedQuery");
+      mappedQuery.disabled = false;
+      mappedQuery.focus();
+      mappedQuery.select();
+      document.execCommand("copy");
+      mappedQuery.disabled = true;
+      let copyClipboard = document.getElementById("copyClipboard");
+      copyClipboard.innerText = "Copied !!";
+      setTimeout(() => {
+        copyClipboard.innerText = "Copy to clipboard";
+      }, 1000);
+      copyClipboard.focus();
+    }
+
+    function reset() {
+      document.getElementById("sql").value = "";
+      document.getElementById("params").value = "";
+      document.getElementById("mappedQuery").value = "";
+    }
+  </script>
+</html>
